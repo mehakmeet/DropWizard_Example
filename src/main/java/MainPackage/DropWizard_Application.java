@@ -1,16 +1,35 @@
 package MainPackage;
 
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
+import java.util.concurrent.TimeUnit;
+
 public class DropWizard_Application extends Application<ConfigClass> {
+
+
 
     public static void main(String[] args) throws Exception
 
     {
+
+
         new DropWizard_Application().run(args);
 
+
+
+    }
+
+    private static void startReport(Environment environment) {
+        ConsoleReporter reporter = ConsoleReporter.forRegistry(environment.metrics())
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+        reporter.start(1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -25,6 +44,10 @@ public class DropWizard_Application extends Application<ConfigClass> {
 
     @Override
     public void run(ConfigClass configClass, Environment environment){
+
+        startReport(environment);
+
+
 
         final ResourceClass resourceClass = new ResourceClass(configClass.getTemplate(),configClass.getDefName());
 
